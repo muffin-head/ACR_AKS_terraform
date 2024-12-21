@@ -1,0 +1,39 @@
+name: Deploy ACR and AKS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy-acr-aks:
+    name: Deploy ACR and AKS
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Authenticate with Azure CLI using Device Code
+      - name: Authenticate with Azure CLI
+        run: az login --use-device-code
+
+      # Step 3: Set up Terraform
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.6
+
+      # Step 4: Terraform Init
+      - name: Terraform Init
+        run: terraform -chdir=terraform init
+
+      # Step 5: Terraform Plan
+      - name: Terraform Plan
+        run: terraform -chdir=terraform plan
+
+      # Step 6: Terraform Apply
+      - name: Terraform Apply
+        run: terraform -chdir=terraform apply -auto-approve
