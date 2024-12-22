@@ -63,6 +63,7 @@ resource "azurerm_role_assignment" "aks_acr_pull" {
 # Output AKS Cluster JSON
 output "aks_cluster_json" {
   value = jsonencode(azurerm_kubernetes_cluster.aks)
+  sensitive = false
 }
 
 # Save AKS Details to a Local File
