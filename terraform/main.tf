@@ -14,13 +14,13 @@ provider "azurerm" {
 
 # Resource Group
 resource "azurerm_resource_group" "rg" {
-  name     = "rg-aks-acr-terraform"
+  name     = "rg-aks-acr-terraformv1"
   location = var.location
 }
 
 # Azure Container Registry
 resource "azurerm_container_registry" "acr" {
-  name                = "acrterraformSepsisStreaming" # Must be globally unique
+  name                = "acrterraformSepsisStreamingv1" # Must be globally unique
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   sku                 = "Basic" # Options: Basic, Standard, Premium
@@ -33,10 +33,10 @@ resource "azurerm_container_registry" "acr" {
 
 # Azure Kubernetes Service
 resource "azurerm_kubernetes_cluster" "aks" {
-  name                = "aks-terraform-cluster"
+  name                = "aks-terraform-clusterv1"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-  dns_prefix          = "aksterraformSepsisStreaming"
+  dns_prefix          = "aksterraformSepsisStreamingv1"
 
   default_node_pool {
     name       = "default"
@@ -58,4 +58,15 @@ resource "azurerm_role_assignment" "aks_acr_pull" {
   scope                = azurerm_container_registry.acr.id
   role_definition_name = "AcrPull"
   principal_id         = azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id
+}
+
+# Output AKS Cluster JSON
+output "aks_cluster_json" {
+  value = jsonencode(azurerm_kubernetes_cluster.aks)
+}
+
+# Save AKS Details to a Local File
+resource "local_file" "aks_cluster_details" {
+  content  = jsonencode(azurerm_kubernetes_cluster.aks)
+  filename = "${path.module}/aks-cluster-details.json"
 }
