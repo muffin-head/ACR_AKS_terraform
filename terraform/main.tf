@@ -60,11 +60,6 @@ resource "azurerm_role_assignment" "aks_acr_pull" {
   principal_id         = azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id
 }
 
-# Output AKS Cluster JSON
-output "aks_cluster_json" {
-  value = jsonencode(azurerm_kubernetes_cluster.aks)
-  sensitive = false
-}
 
 # Save AKS Details to a Local File
 resource "local_file" "aks_cluster_details" {
